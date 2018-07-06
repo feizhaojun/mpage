@@ -1,0 +1,29 @@
+ul.page-content{
+  overflow: hidden;
+}
+ul.page-content li{
+  float: left;
+  list-style: none;
+  margin: 0 10px;
+}
+ul.page-content li span,
+ul.page-content li a{
+  display: inline-block;
+  height: 16px;
+  line-height: 16px;
+  padding: 0 5px;
+  text-decoration: none;
+  text-align: center;
+  color: #a3a3a3;
+  font-size: 12px;
+}
+ul.page-content li a.active,
+ul.page-content li a:hover{
+  color: #e02d4b;
+}
+ul.page-content li a.page-prev:before{
+  content:'<';
+}
+ul.page-content li a.page-next:before{
+  content:'>';
+}

@@ -5,72 +5,79 @@
  */
 
 function Page(opt){
-    var _opt = {
-        el:'page',
-        current:1,
-        total:1
+    this.el = opt.el || '#page'
+    this.current = opt.current || 1
+    this.total = opt.total || 1
+    this.callback = opt.callback || function () {}
+    if (opt.current > opt.total) {
+        this.current = opt.total
     }
-    var opt = opt || _opt;
+}
 
+Page.prototype.init = function () {
     // 页数小于2则不分页
-    if(opt.total<2){
-        $('#' + opt.el).html('');
-        return;
+    if(this.total < 2){
+        $(this.el).html('')
+        return
     }
 
-    var h = [];
-    var first = opt.current - 3;
+    var h = []
+    // 第一个显示页码
+    var first = this.current - 3
+    // 第一个页码必须大于 0
     do{
-        first++;
-    }while(first < 1);
-    console.log(first);
-
-    h.push('<div class="c"><div class="right"><ul class="c pagebox"><li><a class="g-page-left" href="javascript:;"></a></li>');
-    if(opt.current > 3){
-        h.push('<li class="g-page-num"><a onclick="" href="javascript:void(0)">1</a></li>');
-        if(opt.current > 4){
-            h.push('<li class="g-page-num"><span>...</span></li>');
+        first++
+    }while(first < 1)
+    h.push('<ul class="page-content"><li><a class="page-prev" href="javascript:;"></a></li>')
+    if(this.current > 3){
+        // 就算当前页大于 3，第 1 页也是必然显示的
+        h.push('<li><a href="javascript:;">1</a></li>')
+        if(this.current > 4){
+            // 当前页面大于 4，省略前面页码
+            h.push('<li><span>...</span></li>')
         }
     }
-    for(var i=0;i<opt.current+2;i++){
-        if(first + i <= opt.total){
-            if(first + i == opt.current){
-                h.push('<li class="g-page-num"><a class="hover" onclick="" href="javascript:;">' + (first + i) + '</a>');
+    console.log(first,this.current)
+    for(var i = first; i <= this.current + 2; i++){
+        if(i <= this.total){
+            if(i == this.current){
+                h.push('<li><a class="active" href="javascript:;">' + i + '</a>')
             }else{
-                h.push('<li class="g-page-num"><a onclick="" href="javascript:;">' + (first + i) + '</a>');
+                h.push('<li><a href="javascript:;">' + i + '</a>')
             }
-            h.push('</li>');
+            h.push('</li>')
         }
     }
-    if(opt.total - opt.current > 2){
-        if(opt.total - opt.current > 3){
-            h.push('<li class="g-page-num"><span>...</span></li>');
+    if(this.total - this.current > 2){
+        if(this.total - this.current > 3){
+            h.push('<li><span>...</span></li>')
         }
-        h.push('<li class="g-page-num"><a onclick="" href="javascript:void(0)">' + opt.total + '</a></li>');
+        h.push('<li><a href="javascript:;">' + this.total + '</a></li>')
     }
-    h.push('<li><a class="g-page-right" href="javascript:void(0)"></a></li></ul></div></div>');
-    $('#' + opt.el).html(h.join(''));
-
-    $('.g-page-num').on('click','a',function(){
-        opt.current = $(this).html();
-        if(opt.callback){
-            opt.callback(opt.current);
+    h.push('<li><a class="page-next" href="javascript:void(0)"></a></li></ul>')
+    $(this.el).html(h.join(''))
+    var that = this
+    $('ul.page-content li a').on('click', function(){
+        if ($(this).hasClass('page-prev')) {
+            that.current --
+            if(that.callback && that.current > 0){
+                that.callback(that.current)
+            }else if(that.current <= 0){
+                that.current = 1
+            }
+        } else if ($(this).hasClass('page-next')) {
+            that.current ++
+            if(that.callback && that.current <= that.total){
+                that.callback(that.current)
+            }else if(that.current > that.total){
+                that.current = that.total
+            }
+        } else {
+            that.current = $(this).html()
+            if(that.callback){
+                that.callback(that.current)
+            }
         }
-    });
-    $('.g-page-left').on('click',function(){
-        opt.current --;
-        if(opt.callback && opt.current > 0){
-            opt.callback(opt.current);
-        }else if(opt.current <= 0){
-            opt.current = 1;
-        }
-    });
-    $('.g-page-right').on('click',function(){
-        opt.current ++;
-        if(opt.callback && opt.current <= opt.total){
-            opt.callback(opt.current);
-        }else if(opt.current > opt.total){
-            opt.current = opt.total;
-        }
-    });
+        that.init()
+    })
 }
