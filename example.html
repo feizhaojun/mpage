@@ -14,8 +14,9 @@
 <script>
   var page = new Page({
     el: '#page', // 分页代码放置在页面元素 <div id="page"></div>
-    current: 20, // 当前页码
-    total: 5, // 总页数
+    current: 3, // 当前页码
+    total: 50, // 总页数
+    showNum: 12,
     callback: function (res) {
       // 点击后执行的动作，res 的值是点击的页码
     }
